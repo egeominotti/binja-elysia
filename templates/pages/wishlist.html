@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <a href="/" class="breadcrumb-item">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-item active">Wishlist</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="wishlist-page">
+  <div class="container">
+    <h1 class="page-title">My Wishlist</h1>
+
+    {% if wishlist_items|length > 0 %}
+      <div class="wishlist-grid">
+        {% for item in wishlist_items %}
+          <article class="wishlist-item" data-wishlist-id="{{ item.id }}">
+            <a href="/products/{{ item.product.slug }}" class="wishlist-item-image">
+              <img src="{{ item.product.images.0.url|default('/images/placeholder.svg') }}" alt="{{ item.product.name }}">
+            </a>
+
+            <div class="wishlist-item-content">
+              <h3 class="wishlist-item-name">
+                <a href="/products/{{ item.product.slug }}">{{ item.product.name }}</a>
+              </h3>
+
+              {% if item.product.brand %}
+                <span class="wishlist-item-brand">{{ item.product.brand.name }}</span>
+              {% endif %}
+
+              <div class="wishlist-item-price">
+                <span class="price-current">{{ item.product.price|currency }}</span>
+                {% if item.product.compareAtPrice and item.product.compareAtPrice > item.product.price %}
+                  <span class="price-original">{{ item.product.compareAtPrice|currency }}</span>
+                {% endif %}
+              </div>
+
+              <div class="wishlist-item-stock">
+                {% if item.product.stock > 0 %}
+                  <span class="in-stock">In Stock</span>
+                {% else %}
+                  <span class="out-of-stock">Out of Stock</span>
+                {% endif %}
+              </div>
+
+              <div class="wishlist-item-actions">
+                {% if item.product.stock > 0 %}
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    data-add-to-cart
+                    data-product-id="{{ item.product.id }}"
+                  >
+                    Add to Cart
+                  </button>
+                {% else %}
+                  <button type="button" class="btn btn-secondary btn-sm" disabled>
+                    Out of Stock
+                  </button>
+                {% endif %}
+
+                <button
+                  type="button"
+                  class="btn btn-outline btn-sm"
+                  data-remove-wishlist
+                  data-wishlist-id="{{ item.id }}"
+                  title="Remove from Wishlist"
+                >
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <div class="wishlist-actions">
+        <a href="/products" class="btn btn-outline">Continue Shopping</a>
+        <button type="button" class="btn btn-primary" id="add-all-to-cart">
+          Add All to Cart
+        </button>
+      </div>
+    {% else %}
+      <div class="empty-wishlist">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </div>
+        <h2>Your wishlist is empty</h2>
+        <p>Save items you love by clicking the heart icon on any product.</p>
+        <a href="/products" class="btn btn-primary btn-lg">Browse Products</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.wishlist-page {
+  padding: 2rem 0;
+  min-height: 60vh;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.wishlist-item {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+
+.wishlist-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.wishlist-item-image {
+  display: block;
+  aspect-ratio: 1;
+  background: var(--gray-100);
+}
+
+.wishlist-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wishlist-item-content {
+  padding: 1rem;
+}
+
+.wishlist-item-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.wishlist-item-name a {
+  color: var(--gray-900);
+}
+
+.wishlist-item-brand {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.wishlist-item-price {
+  margin-bottom: 0.5rem;
+}
+
+.wishlist-item-price .price-current {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.wishlist-item-price .price-original {
+  font-size: 0.875rem;
+  color: var(--gray-400);
+  text-decoration: line-through;
+  margin-left: 0.5rem;
+}
+
+.wishlist-item-stock {
+  font-size: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.wishlist-item-stock .in-stock {
+  color: var(--success);
+}
+
+.wishlist-item-stock .out-of-stock {
+  color: var(--danger);
+}
+
+.wishlist-item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.wishlist-item-actions .btn {
+  flex: 1;
+}
+
+.wishlist-item-actions .btn:last-child {
+  flex: 0;
+}
+
+.wishlist-actions {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.empty-wishlist {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  color: var(--gray-300);
+}
+
+.empty-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.empty-wishlist h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-wishlist p {
+  color: var(--gray-500);
+  margin-bottom: 1.5rem;
+}
+</style>
+{% endblock %}

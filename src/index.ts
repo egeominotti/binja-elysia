@@ -284,6 +284,74 @@ const app = new Elysia()
     })
   })
 
+  // Login Page
+  .get('/login', async ({ categories, brands, cart }) => {
+    return render('pages/login.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/login'
+    })
+  })
+
+  // Register Page
+  .get('/register', async ({ categories, brands, cart }) => {
+    return render('pages/register.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/register'
+    })
+  })
+
+  // Account Page
+  .get('/account', async ({ categories, brands, cart }) => {
+    // Demo user for showcase
+    const user = {
+      id: 1,
+      firstName: 'Demo',
+      lastName: 'User',
+      email: 'demo@example.com',
+      avatar: null
+    }
+
+    return render('pages/account.html', {
+      user,
+      orders_count: 3,
+      wishlist_count: 5,
+      reviews_count: 2,
+      recent_orders: [],
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      is_authenticated: true,
+      request_path: '/account'
+    })
+  })
+
+  // Wishlist Page
+  .get('/account/wishlist', async ({ categories, brands, cart }) => {
+    // Get featured products as demo wishlist items
+    const wishlistProducts = await productService.getFeaturedProducts(4)
+    const wishlist_items = wishlistProducts.map((p, i) => ({
+      id: i + 1,
+      product: p
+    }))
+
+    return render('pages/wishlist.html', {
+      wishlist_items,
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      is_authenticated: true,
+      request_path: '/account/wishlist'
+    })
+  })
+
   // Search
   .get('/search', async ({ query, categories, brands, cart }) => {
     const searchQuery = query.q as string
