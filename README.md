@@ -14,6 +14,94 @@ This project demonstrates the power and flexibility of Binja's template system w
 - **Responsive Design**: Mobile-first CSS with modern design
 - **SVG Placeholder Images**: Lightweight demo images
 
+## Why Binja?
+
+### Familiar Syntax
+If you know Python/Django or Jinja2, you're already productive. No new templating language to learn.
+
+### Template Inheritance = DRY Code
+Define a base layout once, extend it everywhere. Change the header in one place, update all pages instantly.
+
+```html
+<!-- base.html: define structure once -->
+<!DOCTYPE html>
+<html>
+  <body>
+    {% block content %}{% endblock %}
+  </body>
+</html>
+
+<!-- page.html: just fill the blocks -->
+{% extends "base.html" %}
+{% block content %}
+  <h1>My Page</h1>
+{% endblock %}
+```
+
+### Powerful Custom Filters
+Keep templates clean by moving presentation logic into reusable filters:
+
+```html
+{{ 1299.99|currency }}     <!-- €1,299.99 -->
+{{ 4.5|stars }}            <!-- ★★★★☆ -->
+{{ 3|stock_status }}       <!-- Low Stock -->
+```
+
+### High Performance (AOT Compilation)
+Binja compiles templates ahead-of-time for blazing fast rendering in production.
+
+### Clean Separation of Concerns
+- **Controllers** handle business logic and data
+- **Templates** handle presentation only
+
+```typescript
+// Controller: fetch data
+const products = await db.query.products.findMany()
+return render('products.html', { products })
+```
+
+```html
+<!-- Template: render data -->
+{% for product in products %}
+  <div>{{ product.name }}</div>
+{% endfor %}
+```
+
+### 84 Built-in Filters + Extensible
+Don't reinvent the wheel. Date formatting, string manipulation, array operations - all built-in. Need more? Add custom filters easily.
+
+### Reusable Components
+```html
+{% include "components/product-card.html" %}
+```
+Write once, use everywhere.
+
+### Comparison with Alternatives
+
+| Feature | Binja | JSX/React | EJS | Handlebars |
+|---------|-------|-----------|-----|------------|
+| Server-side rendering | Yes | No | Yes | Yes |
+| No client JS required | Yes | No | Yes | Yes |
+| Template inheritance | Yes | No | No | Partial |
+| 84+ built-in filters | Yes | No | No | No |
+| Django/Jinja2 syntax | Yes | No | No | No |
+| AOT compilation | Yes | Yes | No | No |
+| Custom filters | Yes | N/A | No | Yes |
+
+### Ideal Use Cases
+
+**Perfect for:**
+- E-commerce sites
+- Blogs and CMS
+- Admin dashboards
+- Marketing/landing pages
+- SEO-critical applications
+- Multi-page applications (MPA)
+
+**Consider alternatives for:**
+- Highly interactive SPAs
+- Real-time collaborative apps
+
 ## Quick Start
 
 ### Prerequisites
