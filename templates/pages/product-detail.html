@@ -1,0 +1,1089 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block meta_description %}{{ product.shortDescription|default(product.description)|truncatechars(160) }}{% endblock %}
+
+{% block meta_tags %}
+<meta property="og:title" content="{{ product.name }} | {{ site_name }}">
+<meta property="og:description" content="{{ product.shortDescription|default(product.description)|truncatechars(200) }}">
+<meta property="og:image" content="{{ product.images.0.url|default('/images/placeholder.svg') }}">
+<meta property="og:type" content="product">
+<meta property="product:price:amount" content="{{ product.price }}">
+<meta property="product:price:currency" content="{{ currency_code }}">
+{% endblock %}
+
+{% block breadcrumb %}
+<div class="breadcrumb">
+  <div class="container">
+    <a href="/" class="breadcrumb-item">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="/products" class="breadcrumb-item">Products</a>
+    <span class="breadcrumb-separator">/</span>
+    {% if product.category %}
+      <a href="/category/{{ product.category.slug }}" class="breadcrumb-item">{{ product.category.name }}</a>
+      <span class="breadcrumb-separator">/</span>
+    {% endif %}
+    <span class="breadcrumb-item active">{{ product.name|truncatechars(40) }}</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+  <div class="container">
+    <div class="product-detail-grid">
+      <!-- Gallery -->
+      <div class="product-gallery">
+        <div class="gallery-main">
+          <img
+            id="main-image"
+            src="{{ product.images.0.url|default('/images/placeholder.svg') }}"
+            alt="{{ product.images.0.alt|default(product.name) }}"
+          >
+          {% if product.isOnSale and product.compareAtPrice %}
+            <span class="gallery-badge badge-danger">-{{ product.price|discount_percent(product.compareAtPrice) }}%</span>
+          {% endif %}
+          {% if product.isNew %}
+            <span class="gallery-badge gallery-badge-new badge-info">New</span>
+          {% endif %}
+        </div>
+
+        {% if product.images|length > 1 %}
+          <div class="gallery-thumbs">
+            {% for image in product.images %}
+              <button
+                type="button"
+                class="gallery-thumb {{ 'active' if loop.first else '' }}"
+                data-image="{{ image.url }}"
+                data-alt="{{ image.alt|default(product.name) }}"
+              >
+                <img src="{{ image.url }}" alt="{{ image.alt|default('Thumbnail') }}">
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        {% if product.brand %}
+          <a href="/brand/{{ product.brand.slug }}" class="product-brand">{{ product.brand.name }}</a>
+        {% endif %}
+
+        <h1 class="product-name">{{ product.name }}</h1>
+
+        <!-- Rating -->
+        {% if product.avgRating > 0 %}
+          <div class="product-rating-large">
+            <span class="stars">{{ product.avgRating|stars_html|safe }}</span>
+            <span class="rating-value">{{ product.avgRating|floatformat(1) }}</span>
+            <a href="#reviews" class="rating-link">({{ product.reviewCount }} review{{ product.reviewCount|pluralize }})</a>
+          </div>
+        {% endif %}
+
+        <!-- Price -->
+        <div class="product-price-large">
+          <span class="price-current">{{ product.price|currency }}</span>
+          {% if product.compareAtPrice and product.compareAtPrice > product.price %}
+            <span class="price-original">{{ product.compareAtPrice|currency }}</span>
+            <span class="price-savings">You save {{ (product.compareAtPrice - product.price)|currency }} ({{ product.price|discount_percent(product.compareAtPrice) }}%)</span>
+          {% endif %}
+        </div>
+
+        <!-- Short Description -->
+        {% if product.shortDescription %}
+          <p class="product-short-desc">{{ product.shortDescription }}</p>
+        {% endif %}
+
+        <!-- Stock Status -->
+        <div class="product-stock {{ product.stock|stock_class }}">
+          {{ product.stock|stock_status|safe }}
+          {% if product.stock > 0 and product.stock <= 10 %}
+            <span class="stock-message">Only {{ product.stock }} left - order soon!</span>
+          {% endif %}
+        </div>
+
+        <!-- Variants -->
+        {% if product.variants|length > 0 %}
+          <form id="add-to-cart-form" class="product-options">
+            {% for attribute in variant_attributes %}
+              <div class="option-group">
+                <label class="option-label">
+                  {{ attribute.name }}:
+                  <span id="selected-{{ attribute.slug }}">Select {{ attribute.name }}</span>
+                </label>
+
+                {% if attribute.type == 'color' %}
+                  <div class="color-options">
+                    {% for value in attribute.values %}
+                      <label class="color-option">
+                        <input
+                          type="radio"
+                          name="{{ attribute.slug }}"
+                          value="{{ value.slug }}"
+                          {{ 'required' if attribute.isRequired else '' }}
+                        >
+                        <span
+                          class="color-swatch-large"
+                          style="background-color: {{ value.colorHex }}"
+                          title="{{ value.value }}"
+                        ></span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                {% elif attribute.type == 'size' %}
+                  <div class="size-options">
+                    {% for value in attribute.values %}
+                      <label class="size-option">
+                        <input
+                          type="radio"
+                          name="{{ attribute.slug }}"
+                          value="{{ value.slug }}"
+                          {{ 'required' if attribute.isRequired else '' }}
+                          {{ 'disabled' if value.outOfStock else '' }}
+                        >
+                        <span class="size-btn {{ 'disabled' if value.outOfStock else '' }}">{{ value.value }}</span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                  <button type="button" class="size-guide-link" data-modal-open="size-guide-modal">Size Guide</button>
+                {% else %}
+                  <select name="{{ attribute.slug }}" class="form-select" {{ 'required' if attribute.isRequired else '' }}>
+                    <option value="">Select {{ attribute.name }}</option>
+                    {% for value in attribute.values %}
+                      <option value="{{ value.slug }}" {{ 'disabled' if value.outOfStock else '' }}>
+                        {{ value.value }}{{ ' - Out of Stock' if value.outOfStock else '' }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </form>
+        {% endif %}
+
+        <!-- Add to Cart -->
+        <div class="product-actions-main">
+          <div class="quantity-input">
+            <button type="button" class="quantity-btn" data-action="minus">-</button>
+            <input type="number" id="quantity" value="1" min="1" max="{{ product.stock }}" data-item-id="{{ product.id }}">
+            <button type="button" class="quantity-btn" data-action="plus">+</button>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-primary btn-lg add-to-cart-btn"
+            data-add-to-cart
+            data-product-id="{{ product.id }}"
+            {{ 'disabled' if product.stock == 0 else '' }}
+          >
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            {{ 'Out of Stock' if product.stock == 0 else 'Add to Cart' }}
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-outline wishlist-btn"
+            data-add-to-wishlist
+            data-product-id="{{ product.id }}"
+          >
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Shipping Info -->
+        <div class="product-shipping-info">
+          <div class="shipping-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="3" width="15" height="13"></rect>
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+              <circle cx="5.5" cy="18.5" r="2.5"></circle>
+              <circle cx="18.5" cy="18.5" r="2.5"></circle>
+            </svg>
+            <span>Free shipping over {{ free_shipping_threshold|currency }}</span>
+          </div>
+          <div class="shipping-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            <span>30-day returns</span>
+          </div>
+          <div class="shipping-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Secure checkout</span>
+          </div>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="product-meta">
+          <div class="meta-item">
+            <span class="meta-label">SKU:</span>
+            <span class="meta-value">{{ product.sku }}</span>
+          </div>
+          {% if product.category %}
+            <div class="meta-item">
+              <span class="meta-label">Category:</span>
+              <a href="/category/{{ product.category.slug }}" class="meta-value">{{ product.category.name }}</a>
+            </div>
+          {% endif %}
+          {% if product.tags|length > 0 %}
+            <div class="meta-item">
+              <span class="meta-label">Tags:</span>
+              <span class="meta-value">
+                {% for tag in product.tags %}
+                  <a href="/products?tag={{ tag.slug }}">{{ tag.name }}</a>{{ ', ' if not loop.last else '' }}
+                {% endfor %}
+              </span>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Share -->
+        <div class="product-share">
+          <span>Share:</span>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ request_url|urlencode }}" target="_blank" rel="noopener" aria-label="Share on Facebook">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+          </a>
+          <a href="https://twitter.com/intent/tweet?url={{ request_url|urlencode }}&text={{ product.name|urlencode }}" target="_blank" rel="noopener" aria-label="Share on Twitter">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+          </a>
+          <a href="https://pinterest.com/pin/create/button/?url={{ request_url|urlencode }}&media={{ product.images.0.url|urlencode }}&description={{ product.name|urlencode }}" target="_blank" rel="noopener" aria-label="Share on Pinterest">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.372 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+          </a>
+          <button type="button" class="copy-link-btn" data-copy="{{ request_url }}" aria-label="Copy link">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="product-tabs">
+      <div class="tabs-nav">
+        <button type="button" class="tab-btn active" data-tab="description">Description</button>
+        <button type="button" class="tab-btn" data-tab="specifications">Specifications</button>
+        <button type="button" class="tab-btn" data-tab="reviews">Reviews ({{ product.reviewCount }})</button>
+      </div>
+
+      <div class="tabs-content">
+        <!-- Description -->
+        <div id="tab-description" class="tab-pane active">
+          <div class="product-description">
+            {{ product.description|linebreaks|safe }}
+          </div>
+        </div>
+
+        <!-- Specifications -->
+        <div id="tab-specifications" class="tab-pane">
+          <table class="specs-table">
+            <tbody>
+              <tr>
+                <th>SKU</th>
+                <td>{{ product.sku }}</td>
+              </tr>
+              {% if product.brand %}
+                <tr>
+                  <th>Brand</th>
+                  <td>{{ product.brand.name }}</td>
+                </tr>
+              {% endif %}
+              {% if product.weight %}
+                <tr>
+                  <th>Weight</th>
+                  <td>{{ product.weight|weight_format }}</td>
+                </tr>
+              {% endif %}
+              {% if product.dimensions %}
+                <tr>
+                  <th>Dimensions</th>
+                  <td>{{ product.dimensions }}</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Reviews -->
+        <div id="tab-reviews" class="tab-pane">
+          <div id="reviews" class="reviews-section">
+            <div class="reviews-summary">
+              <div class="rating-big">
+                <span class="rating-number">{{ product.avgRating|floatformat(1) }}</span>
+                <div class="rating-stars">{{ product.avgRating|stars_html|safe }}</div>
+                <span class="rating-total">{{ product.reviewCount }} review{{ product.reviewCount|pluralize }}</span>
+              </div>
+
+              <div class="rating-breakdown">
+                {% for i in [5, 4, 3, 2, 1] %}
+                  <div class="rating-bar">
+                    <span class="rating-label">{{ i }} star</span>
+                    <div class="rating-progress">
+                      <div class="rating-progress-fill" style="width: {{ rating_distribution[i]|default(0) }}%"></div>
+                    </div>
+                    <span class="rating-count">{{ rating_counts[i]|default(0) }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            {% if is_authenticated %}
+              <button type="button" class="btn btn-outline" data-modal-open="write-review-modal">Write a Review</button>
+            {% else %}
+              <p class="login-to-review">
+                <a href="/login?next={{ request_path|urlencode }}">Login</a> to write a review.
+              </p>
+            {% endif %}
+
+            <div class="reviews-list">
+              {% for review in reviews %}
+                <article class="review-card">
+                  <div class="review-header">
+                    <div class="review-author">
+                      <div class="author-avatar">{{ review.user.firstName|initials }}</div>
+                      <div class="author-info">
+                        <span class="author-name">{{ review.user.firstName }} {{ review.user.lastName|first }}.</span>
+                        {% if review.isVerifiedPurchase %}
+                          <span class="verified-badge">Verified Purchase</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <time class="review-date">{{ review.createdAt|time_ago }}</time>
+                  </div>
+
+                  <div class="review-rating">
+                    {{ review.rating|stars_html|safe }}
+                  </div>
+
+                  {% if review.title %}
+                    <h4 class="review-title">{{ review.title }}</h4>
+                  {% endif %}
+
+                  <div class="review-content">
+                    {{ review.content|linebreaksbr }}
+                  </div>
+
+                  <div class="review-footer">
+                    <button type="button" class="helpful-btn" data-review-id="{{ review.id }}">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                      </svg>
+                      Helpful ({{ review.helpfulCount }})
+                    </button>
+                  </div>
+                </article>
+              {% empty %}
+                <p class="no-reviews">No reviews yet. Be the first to review this product!</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products|length > 0 %}
+      <section class="related-products">
+        <h2 class="section-title">Related Products</h2>
+        <div class="product-grid">
+          {% for p in related_products %}
+            {% include "components/product-card.html" with product=p %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Recently Viewed -->
+    {% if recently_viewed|length > 0 %}
+      <section class="recently-viewed">
+        <h2 class="section-title">Recently Viewed</h2>
+        <div class="product-grid">
+          {% for p in recently_viewed %}
+            {% include "components/product-card.html" with product=p %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.product-detail {
+  padding: 2rem 0;
+}
+
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+/* Gallery */
+.product-gallery {
+  position: sticky;
+  top: 100px;
+}
+
+.gallery-main {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--gray-100);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gallery-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.gallery-badge-new {
+  top: auto;
+  bottom: 1rem;
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+}
+
+.gallery-thumb {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  background: var(--gray-100);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.gallery-thumb.active, .gallery-thumb:hover {
+  border-color: var(--primary);
+}
+
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Product Info */
+.product-brand {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.product-name {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.product-rating-large {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.rating-value {
+  font-weight: 600;
+}
+
+.rating-link {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+}
+
+.product-price-large {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.product-price-large .price-current {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.product-price-large .price-original {
+  font-size: 1.25rem;
+}
+
+.price-savings {
+  font-size: 0.875rem;
+  color: var(--success);
+  font-weight: 500;
+}
+
+.product-short-desc {
+  color: var(--gray-600);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.product-stock {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stock-message {
+  font-size: 0.875rem;
+  color: var(--warning);
+}
+
+/* Options */
+.product-options {
+  margin-bottom: 1.5rem;
+}
+
+.option-group {
+  margin-bottom: 1.25rem;
+}
+
+.option-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.option-label span {
+  font-weight: 400;
+  color: var(--gray-500);
+}
+
+.color-options, .size-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.color-option, .size-option {
+  cursor: pointer;
+}
+
+.color-option input, .size-option input {
+  display: none;
+}
+
+.color-swatch-large {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  border: 3px solid var(--white);
+  box-shadow: 0 0 0 1px var(--gray-300);
+  transition: box-shadow 0.2s;
+}
+
+.color-option input:checked + .color-swatch-large {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.size-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 48px;
+  padding: 0 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.size-option input:checked + .size-btn {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.size-btn.disabled {
+  opacity: 0.5;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.size-guide-link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+/* Actions */
+.product-actions-main {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.add-to-cart-btn {
+  flex: 1;
+}
+
+.wishlist-btn {
+  width: 52px;
+  padding: 0;
+}
+
+.wishlist-btn.active svg {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+/* Shipping Info */
+.product-shipping-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+}
+
+.shipping-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.shipping-item svg {
+  color: var(--primary);
+}
+
+/* Meta */
+.product-meta {
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.meta-item {
+  margin-bottom: 0.5rem;
+}
+
+.meta-label {
+  color: var(--gray-500);
+}
+
+.meta-value a {
+  color: var(--gray-700);
+}
+
+/* Share */
+.product-share {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.product-share span {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+.product-share a, .product-share button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  border: none;
+  border-radius: var(--radius-full);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.product-share a:hover, .product-share button:hover {
+  background: var(--primary);
+  color: var(--white);
+}
+
+/* Tabs */
+.product-tabs {
+  margin-bottom: 4rem;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--gray-200);
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  padding: 1rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--gray-600);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--gray-900);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+.product-description {
+  max-width: 800px;
+  line-height: 1.8;
+}
+
+.specs-table {
+  width: 100%;
+  max-width: 600px;
+  border-collapse: collapse;
+}
+
+.specs-table th, .specs-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-200);
+  text-align: left;
+}
+
+.specs-table th {
+  width: 200px;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+
+/* Reviews */
+.reviews-summary {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.rating-big {
+  text-align: center;
+}
+
+.rating-number {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rating-stars {
+  margin: 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.rating-total {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+}
+
+.rating-breakdown {
+  flex: 1;
+  max-width: 400px;
+}
+
+.rating-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.rating-label {
+  width: 50px;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.rating-progress {
+  flex: 1;
+  height: 8px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.rating-progress-fill {
+  height: 100%;
+  background: var(--warning);
+  border-radius: var(--radius-full);
+}
+
+.rating-count {
+  width: 30px;
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  text-align: right;
+}
+
+.login-to-review {
+  margin-bottom: 2rem;
+  color: var(--gray-600);
+}
+
+.reviews-list {
+  margin-top: 2rem;
+}
+
+.review-card {
+  padding: 1.5rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.review-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.author-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.author-name {
+  font-weight: 500;
+}
+
+.verified-badge {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--success);
+}
+
+.review-date {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+.review-rating {
+  margin-bottom: 0.5rem;
+}
+
+.review-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.review-content {
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+.review-footer {
+  margin-top: 1rem;
+}
+
+.helpful-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--gray-100);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.helpful-btn:hover {
+  background: var(--gray-200);
+}
+
+.no-reviews {
+  text-align: center;
+  color: var(--gray-500);
+  padding: 2rem;
+}
+
+/* Related */
+.related-products, .recently-viewed {
+  margin-bottom: 4rem;
+}
+
+@media (max-width: 1024px) {
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .product-gallery {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-name {
+    font-size: 1.5rem;
+  }
+
+  .product-price-large .price-current {
+    font-size: 1.5rem;
+  }
+
+  .product-actions-main {
+    flex-direction: column;
+  }
+
+  .wishlist-btn {
+    width: 100%;
+  }
+
+  .reviews-summary {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+</style>
+
+<script>
+// Gallery
+document.querySelectorAll('.gallery-thumb').forEach(thumb => {
+  thumb.addEventListener('click', () => {
+    const mainImage = document.getElementById('main-image')
+    mainImage.src = thumb.dataset.image
+    mainImage.alt = thumb.dataset.alt
+
+    document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'))
+    thumb.classList.add('active')
+  })
+})
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabId = btn.dataset.tab
+
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'))
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'))
+
+    btn.classList.add('active')
+    document.getElementById(`tab-${tabId}`).classList.add('active')
+  })
+})
+
+// Options selection
+document.querySelectorAll('.color-option input, .size-option input').forEach(input => {
+  input.addEventListener('change', () => {
+    const name = input.name
+    const label = input.nextElementSibling.title || input.nextElementSibling.textContent
+    const selectedSpan = document.getElementById(`selected-${name}`)
+    if (selectedSpan) selectedSpan.textContent = label
+  })
+})
+
+// Add to cart with quantity
+document.querySelector('.add-to-cart-btn')?.addEventListener('click', async function() {
+  const productId = this.dataset.productId
+  const quantity = document.getElementById('quantity').value
+
+  // Get variant selections
+  const form = document.getElementById('add-to-cart-form')
+  const options = form ? Object.fromEntries(new FormData(form)) : {}
+
+  try {
+    const res = await fetch('/api/cart/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, quantity, options })
+    })
+    const data = await res.json()
+
+    if (data.success) {
+      TechStore.updateCartCount(data.cartCount)
+      TechStore.showNotification('Added to cart!', 'success')
+    } else {
+      TechStore.showNotification(data.error || 'Failed to add to cart', 'error')
+    }
+  } catch (err) {
+    TechStore.showNotification('An error occurred', 'error')
+  }
+})
+
+// Copy link
+document.querySelector('.copy-link-btn')?.addEventListener('click', async function() {
+  try {
+    await navigator.clipboard.writeText(this.dataset.copy)
+    TechStore.showNotification('Link copied!', 'success')
+  } catch (err) {
+    TechStore.showNotification('Failed to copy link', 'error')
+  }
+})
+</script>
+{% endblock %}

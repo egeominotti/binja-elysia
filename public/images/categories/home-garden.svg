@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect fill="#ecfdf5" width="600" height="400"/>
+  <path fill="#10b981" d="M300 80 L380 160 L380 280 L220 280 L220 160 Z"/>
+  <rect fill="#047857" x="270" y="200" width="60" height="80"/>
+  <rect fill="#fbbf24" x="340" y="180" width="30" height="40"/>
+  <circle fill="#34d399" cx="250" cy="150" r="30"/>
+  <text x="300" y="340" font-family="Arial" font-size="24" fill="#047857" text-anchor="middle">Home &amp; Garden</text>
+</svg>

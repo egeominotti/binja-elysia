@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-title">Discover Premium Tech</h1>
+      <p class="hero-subtitle">Shop the latest electronics, fashion, and home essentials with free shipping over {{ free_shipping_threshold|currency }}</p>
+      <div class="hero-actions">
+        <a href="/products" class="btn btn-primary btn-lg">Shop Now</a>
+        <a href="/products?sale=1" class="btn btn-outline btn-lg">View Sale</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Grid -->
+<section class="section categories-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Shop by Category</h2>
+      <a href="/products" class="section-link">
+        View All Categories
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+    <div class="categories-grid">
+      {% for category in categories %}
+        {% if not category.parentId %}
+          <a href="/category/{{ category.slug }}" class="category-card">
+            <div class="category-image">
+              <img src="{{ category.image|default('/images/categories/' ~ category.slug ~ '.jpg') }}" alt="{{ category.name }}">
+            </div>
+            <div class="category-content">
+              <h3 class="category-name">{{ category.name }}</h3>
+              <span class="category-count">{{ category.productCount|default(0) }} Products</span>
+            </div>
+          </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section featured-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Featured Products</h2>
+      <a href="/products?featured=1" class="section-link">
+        View All
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+    <div class="product-grid">
+      {% for product in featured_products %}
+        {% include "components/product-card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Promo Banner -->
+<section class="promo-section">
+  <div class="container">
+    <div class="promo-grid">
+      <div class="promo-card promo-card-large">
+        <div class="promo-content">
+          <span class="promo-tag">Limited Time</span>
+          <h3 class="promo-title">Up to 40% Off Electronics</h3>
+          <p class="promo-text">Upgrade your tech with amazing deals on smartphones, laptops, and more.</p>
+          <a href="/products?category=electronics&sale=1" class="btn btn-primary">Shop Electronics</a>
+        </div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-content">
+          <span class="promo-tag">New Arrivals</span>
+          <h3 class="promo-title">Spring Collection</h3>
+          <a href="/products?new=1" class="btn btn-outline">Explore</a>
+        </div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-content">
+          <span class="promo-tag">Free Shipping</span>
+          <h3 class="promo-title">Orders Over {{ free_shipping_threshold|currency }}</h3>
+          <a href="/products" class="btn btn-outline">Start Shopping</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- New Arrivals -->
+<section class="section new-arrivals-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">New Arrivals</h2>
+      <a href="/products?new=1" class="section-link">
+        View All
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+    <div class="product-grid">
+      {% for product in new_products %}
+        {% include "components/product-card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- On Sale -->
+{% if sale_products|length > 0 %}
+<section class="section sale-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title"><span class="text-accent">Sale</span> - Don't Miss Out!</h2>
+      <a href="/products?sale=1" class="section-link">
+        View All Sale Items
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+    <div class="product-grid">
+      {% for product in sale_products %}
+        {% include "components/product-card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Brands -->
+<section class="section brands-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Shop by Brand</h2>
+    </div>
+    <div class="brands-grid">
+      {% for brand in brands %}
+        <a href="/brand/{{ brand.slug }}" class="brand-card" title="{{ brand.name }}">
+          {% if brand.logo %}
+            <img src="{{ brand.logo }}" alt="{{ brand.name }}">
+          {% else %}
+            <span class="brand-name">{{ brand.name }}</span>
+          {% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features-section">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <h3 class="feature-title">Free Shipping</h3>
+        <p class="feature-text">On orders over {{ free_shipping_threshold|currency }}</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </div>
+        <h3 class="feature-title">Easy Returns</h3>
+        <p class="feature-text">30-day return policy</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+        </div>
+        <h3 class="feature-title">Secure Payment</h3>
+        <p class="feature-text">100% secure checkout</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+          </svg>
+        </div>
+        <h3 class="feature-title">24/7 Support</h3>
+        <p class="feature-text">Dedicated support team</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+  color: var(--white);
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--gray-300);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* Categories */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.category-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  display: block;
+  background: var(--gray-200);
+}
+
+.category-image {
+  position: absolute;
+  inset: 0;
+}
+
+.category-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.category-card:hover .category-image img {
+  transform: scale(1.05);
+}
+
+.category-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: var(--white);
+}
+
+.category-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.category-count {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+/* Promo Section */
+.promo-section {
+  padding: 4rem 0;
+}
+
+.promo-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.promo-card {
+  background: var(--gray-100);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.promo-card-large {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: var(--white);
+  grid-row: span 2;
+}
+
+.promo-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.promo-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.promo-card-large .promo-title {
+  font-size: 2rem;
+}
+
+.promo-text {
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+}
+
+/* Brands */
+.brands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.brand-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: all 0.2s;
+}
+
+.brand-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.brand-card img {
+  max-height: 40px;
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+.brand-card:hover img {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+/* Features */
+.features-section {
+  padding: 4rem 0;
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.feature-card {
+  text-align: center;
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-100);
+  border-radius: var(--radius-full);
+  color: var(--primary);
+}
+
+.feature-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.feature-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.feature-text {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+@media (max-width: 1024px) {
+  .promo-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .promo-card-large {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+  }
+  .promo-grid {
+    grid-template-columns: 1fr;
+  }
+  .promo-card-large {
+    grid-column: span 1;
+  }
+}
+</style>
+{% endblock %}

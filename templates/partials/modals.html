@@ -1,0 +1,252 @@
+<style>
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-100);
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--gray-600);
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--gray-200);
+  color: var(--gray-900);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--gray-200);
+  background: var(--gray-50);
+}
+
+/* Quick View Modal */
+#quick-view-modal .modal-content {
+  max-width: 900px;
+}
+
+.quick-view-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.quick-view-image img {
+  width: 100%;
+  border-radius: var(--radius);
+}
+
+.quick-view-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 1rem;
+}
+
+.quick-view-price {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.quick-view-price .price-current {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.quick-view-description {
+  color: var(--gray-600);
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+.quick-view-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Notification styles */
+.notification {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow-lg);
+  min-width: 300px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-success {
+  border-left: 4px solid var(--success);
+}
+
+.notification-error {
+  border-left: 4px solid var(--danger);
+}
+
+.notification-info {
+  border-left: 4px solid var(--info);
+}
+
+.notification button {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--gray-400);
+  cursor: pointer;
+}
+
+.notification button:hover {
+  color: var(--gray-600);
+}
+
+@media (max-width: 768px) {
+  .quick-view-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<!-- Quick View Modal -->
+<div id="quick-view-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Quick View</h3>
+      <button type="button" class="modal-close" data-modal-close>&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="quick-view-content">
+        <!-- Content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Size Guide Modal -->
+<div id="size-guide-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Size Guide</h3>
+      <button type="button" class="modal-close" data-modal-close>&times;</button>
+    </div>
+    <div class="modal-body">
+      <table class="size-table" style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--gray-200);">
+            <th style="padding:0.75rem;text-align:left;">Size</th>
+            <th style="padding:0.75rem;text-align:center;">Chest (cm)</th>
+            <th style="padding:0.75rem;text-align:center;">Waist (cm)</th>
+            <th style="padding:0.75rem;text-align:center;">Hips (cm)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--gray-200);">
+            <td style="padding:0.75rem;">XS</td>
+            <td style="padding:0.75rem;text-align:center;">82-85</td>
+            <td style="padding:0.75rem;text-align:center;">63-66</td>
+            <td style="padding:0.75rem;text-align:center;">87-90</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--gray-200);">
+            <td style="padding:0.75rem;">S</td>
+            <td style="padding:0.75rem;text-align:center;">86-89</td>
+            <td style="padding:0.75rem;text-align:center;">67-70</td>
+            <td style="padding:0.75rem;text-align:center;">91-94</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--gray-200);">
+            <td style="padding:0.75rem;">M</td>
+            <td style="padding:0.75rem;text-align:center;">90-93</td>
+            <td style="padding:0.75rem;text-align:center;">71-74</td>
+            <td style="padding:0.75rem;text-align:center;">95-98</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--gray-200);">
+            <td style="padding:0.75rem;">L</td>
+            <td style="padding:0.75rem;text-align:center;">94-97</td>
+            <td style="padding:0.75rem;text-align:center;">75-78</td>
+            <td style="padding:0.75rem;text-align:center;">99-102</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--gray-200);">
+            <td style="padding:0.75rem;">XL</td>
+            <td style="padding:0.75rem;text-align:center;">98-101</td>
+            <td style="padding:0.75rem;text-align:center;">79-82</td>
+            <td style="padding:0.75rem;text-align:center;">103-106</td>
+          </tr>
+          <tr>
+            <td style="padding:0.75rem;">XXL</td>
+            <td style="padding:0.75rem;text-align:center;">102-105</td>
+            <td style="padding:0.75rem;text-align:center;">83-86</td>
+            <td style="padding:0.75rem;text-align:center;">107-110</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

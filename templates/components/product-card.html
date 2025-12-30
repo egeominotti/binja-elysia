@@ -1,0 +1,97 @@
+<article class="product-card" data-product-id="{{ product.id }}">
+  <div class="product-card-image">
+    <a href="/products/{{ product.slug }}">
+      {% if product.images and product.images.length > 0 %}
+        <img src="{{ product.images[0].url }}" alt="{{ product.images[0].alt|default(product.name) }}" loading="lazy">
+      {% else %}
+        <img src="/images/placeholder.svg" alt="{{ product.name }}" loading="lazy">
+      {% endif %}
+    </a>
+
+    <!-- Badges -->
+    <div class="product-badges">
+      {% if product.isNew %}
+        <span class="badge badge-info">New</span>
+      {% endif %}
+      {% if product.isOnSale and product.compareAtPrice %}
+        <span class="badge badge-danger">-{{ product.price|discount_percent(product.compareAtPrice) }}%</span>
+      {% endif %}
+      {% if product.isFeatured %}
+        <span class="badge badge-primary">Featured</span>
+      {% endif %}
+      {% if product.stock == 0 %}
+        <span class="badge badge-secondary">Out of Stock</span>
+      {% elif product.stock <= 5 %}
+        <span class="badge badge-warning">Low Stock</span>
+      {% endif %}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="product-actions">
+      <button
+        type="button"
+        class="product-action-btn"
+        data-add-to-wishlist
+        data-product-id="{{ product.id }}"
+        title="Add to Wishlist"
+      >
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="product-action-btn"
+        data-quick-view
+        data-product-id="{{ product.id }}"
+        title="Quick View"
+      >
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+      {% if product.stock > 0 %}
+        <button
+          type="button"
+          class="product-action-btn"
+          data-add-to-cart
+          data-product-id="{{ product.id }}"
+          data-quantity="1"
+          title="Add to Cart"
+        >
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="product-card-content">
+    {% if product.category %}
+      <span class="product-category">{{ product.category.name }}</span>
+    {% endif %}
+
+    <h3 class="product-title">
+      <a href="/products/{{ product.slug }}">{{ product.name }}</a>
+    </h3>
+
+    {% if product.avgRating > 0 %}
+      <div class="product-rating">
+        <span class="stars">{{ product.avgRating|stars }}</span>
+        <span class="rating-count">({{ product.reviewCount }})</span>
+      </div>
+    {% endif %}
+
+    <div class="product-price">
+      <span class="price-current">{{ product.price|currency }}</span>
+      {% if product.compareAtPrice and product.compareAtPrice > product.price %}
+        <span class="price-original">{{ product.compareAtPrice|currency }}</span>
+        <span class="price-discount">-{{ product.price|discount_percent(product.compareAtPrice) }}%</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

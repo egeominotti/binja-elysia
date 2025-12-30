@@ -1,0 +1,429 @@
+// TechStore JavaScript
+
+const TechStore = {
+  // Initialize
+  init() {
+    this.initDropdowns()
+    this.initQuantityInputs()
+    this.initProductActions()
+    this.initFilters()
+    this.initSearch()
+    this.initCart()
+    this.initModals()
+  },
+
+  // Dropdown menus
+  initDropdowns() {
+    document.querySelectorAll('.has-dropdown').forEach(item => {
+      let timeout
+      item.addEventListener('mouseenter', () => {
+        clearTimeout(timeout)
+        item.querySelector('.dropdown').style.display = 'block'
+      })
+      item.addEventListener('mouseleave', () => {
+        timeout = setTimeout(() => {
+          item.querySelector('.dropdown').style.display = ''
+        }, 200)
+      })
+    })
+  },
+
+  // Quantity inputs
+  initQuantityInputs() {
+    document.querySelectorAll('.quantity-input').forEach(wrapper => {
+      const input = wrapper.querySelector('input')
+      const minus = wrapper.querySelector('[data-action="minus"]')
+      const plus = wrapper.querySelector('[data-action="plus"]')
+
+      minus?.addEventListener('click', () => {
+        const val = parseInt(input.value) || 1
+        if (val > 1) {
+          input.value = val - 1
+          input.dispatchEvent(new Event('change'))
+        }
+      })
+
+      plus?.addEventListener('click', () => {
+        const val = parseInt(input.value) || 1
+        const max = parseInt(input.max) || 999
+        if (val < max) {
+          input.value = val + 1
+          input.dispatchEvent(new Event('change'))
+        }
+      })
+    })
+  },
+
+  // Product quick actions
+  initProductActions() {
+    // Add to cart
+    document.querySelectorAll('[data-add-to-cart]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const productId = btn.dataset.productId
+        const quantity = btn.dataset.quantity || 1
+
+        try {
+          const res = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, quantity })
+          })
+          const data = await res.json()
+
+          if (data.success) {
+            this.updateCartCount(data.cartCount)
+            this.showNotification('Product added to cart!', 'success')
+          } else {
+            this.showNotification(data.error || 'Failed to add to cart', 'error')
+          }
+        } catch (err) {
+          this.showNotification('An error occurred', 'error')
+        }
+      })
+    })
+
+    // Add to wishlist
+    document.querySelectorAll('[data-add-to-wishlist]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const productId = btn.dataset.productId
+
+        try {
+          const res = await fetch('/api/wishlist/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId })
+          })
+          const data = await res.json()
+
+          if (data.success) {
+            btn.classList.toggle('active', data.inWishlist)
+            this.showNotification(
+              data.inWishlist ? 'Added to wishlist!' : 'Removed from wishlist',
+              'success'
+            )
+          }
+        } catch (err) {
+          this.showNotification('An error occurred', 'error')
+        }
+      })
+    })
+
+    // Quick view
+    document.querySelectorAll('[data-quick-view]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const productId = btn.dataset.productId
+        this.openQuickView(productId)
+      })
+    })
+  },
+
+  // Filters
+  initFilters() {
+    const filterForm = document.getElementById('filter-form')
+    if (!filterForm) return
+
+    filterForm.querySelectorAll('input, select').forEach(input => {
+      input.addEventListener('change', () => {
+        filterForm.submit()
+      })
+    })
+
+    // Price range
+    const priceMin = document.getElementById('price-min')
+    const priceMax = document.getElementById('price-max')
+    if (priceMin && priceMax) {
+      let timeout
+      ;[priceMin, priceMax].forEach(input => {
+        input.addEventListener('input', () => {
+          clearTimeout(timeout)
+          timeout = setTimeout(() => filterForm.submit(), 500)
+        })
+      })
+    }
+
+    // Clear filters
+    document.querySelectorAll('[data-clear-filters]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        window.location.href = window.location.pathname
+      })
+    })
+  },
+
+  // Search
+  initSearch() {
+    const searchInput = document.querySelector('.search-input')
+    const searchResults = document.querySelector('.search-results')
+
+    if (!searchInput) return
+
+    let timeout
+    searchInput.addEventListener('input', async (e) => {
+      const query = e.target.value.trim()
+
+      if (query.length < 2) {
+        if (searchResults) searchResults.style.display = 'none'
+        return
+      }
+
+      clearTimeout(timeout)
+      timeout = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+          const data = await res.json()
+
+          if (searchResults && data.products) {
+            this.renderSearchResults(searchResults, data.products)
+          }
+        } catch (err) {
+          console.error('Search error:', err)
+        }
+      }, 300)
+    })
+  },
+
+  renderSearchResults(container, products) {
+    if (products.length === 0) {
+      container.innerHTML = '<div class="search-no-results">No products found</div>'
+    } else {
+      container.innerHTML = products.map(p => `
+        <a href="/products/${p.slug}" class="search-result-item">
+          <img src="${p.image || '/images/placeholder.svg'}" alt="${p.name}">
+          <div class="search-result-content">
+            <div class="search-result-title">${p.name}</div>
+            <div class="search-result-price">${this.formatCurrency(p.price)}</div>
+          </div>
+        </a>
+      `).join('')
+    }
+    container.style.display = 'block'
+  },
+
+  // Cart
+  initCart() {
+    // Remove from cart
+    document.querySelectorAll('[data-remove-from-cart]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault()
+        const itemId = btn.dataset.itemId
+
+        try {
+          const res = await fetch(`/api/cart/remove/${itemId}`, { method: 'DELETE' })
+          const data = await res.json()
+
+          if (data.success) {
+            btn.closest('.cart-item')?.remove()
+            this.updateCartTotals(data.cart)
+            this.updateCartCount(data.cartCount)
+          }
+        } catch (err) {
+          this.showNotification('Failed to remove item', 'error')
+        }
+      })
+    })
+
+    // Update quantity
+    document.querySelectorAll('.cart-item .quantity-input input').forEach(input => {
+      input.addEventListener('change', async () => {
+        const itemId = input.dataset.itemId
+        const quantity = parseInt(input.value)
+
+        try {
+          const res = await fetch(`/api/cart/update/${itemId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity })
+          })
+          const data = await res.json()
+
+          if (data.success) {
+            this.updateCartTotals(data.cart)
+          }
+        } catch (err) {
+          this.showNotification('Failed to update quantity', 'error')
+        }
+      })
+    })
+
+    // Apply coupon
+    const couponForm = document.getElementById('coupon-form')
+    if (couponForm) {
+      couponForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const code = couponForm.querySelector('input[name="code"]').value
+
+        try {
+          const res = await fetch('/api/cart/coupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code })
+          })
+          const data = await res.json()
+
+          if (data.success) {
+            this.showNotification('Coupon applied!', 'success')
+            location.reload()
+          } else {
+            this.showNotification(data.error || 'Invalid coupon', 'error')
+          }
+        } catch (err) {
+          this.showNotification('Failed to apply coupon', 'error')
+        }
+      })
+    }
+  },
+
+  updateCartCount(count) {
+    document.querySelectorAll('.cart-btn .badge').forEach(badge => {
+      if (count > 0) {
+        badge.textContent = count
+        badge.style.display = ''
+      } else {
+        badge.style.display = 'none'
+      }
+    })
+  },
+
+  updateCartTotals(cart) {
+    const subtotal = document.getElementById('cart-subtotal')
+    const discount = document.getElementById('cart-discount')
+    const shipping = document.getElementById('cart-shipping')
+    const total = document.getElementById('cart-total')
+
+    if (subtotal) subtotal.textContent = this.formatCurrency(cart.subtotal)
+    if (discount) discount.textContent = this.formatCurrency(cart.discount)
+    if (shipping) shipping.textContent = cart.shipping === 0 ? 'Free' : this.formatCurrency(cart.shipping)
+    if (total) total.textContent = this.formatCurrency(cart.total)
+  },
+
+  // Modals
+  initModals() {
+    document.querySelectorAll('[data-modal-open]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modalId = btn.dataset.modalOpen
+        this.openModal(modalId)
+      })
+    })
+
+    document.querySelectorAll('[data-modal-close]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modal = btn.closest('.modal')
+        if (modal) this.closeModal(modal.id)
+      })
+    })
+
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) this.closeModal(modal.id)
+      })
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal.open')
+        if (openModal) this.closeModal(openModal.id)
+      }
+    })
+  },
+
+  openModal(id) {
+    const modal = document.getElementById(id)
+    if (modal) {
+      modal.classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+  },
+
+  closeModal(id) {
+    const modal = document.getElementById(id)
+    if (modal) {
+      modal.classList.remove('open')
+      document.body.style.overflow = ''
+    }
+  },
+
+  async openQuickView(productId) {
+    try {
+      const res = await fetch(`/api/products/${productId}`)
+      const product = await res.json()
+
+      const modal = document.getElementById('quick-view-modal')
+      if (modal) {
+        modal.querySelector('.quick-view-content').innerHTML = this.renderQuickView(product)
+        this.openModal('quick-view-modal')
+        this.initQuantityInputs()
+      }
+    } catch (err) {
+      this.showNotification('Failed to load product', 'error')
+    }
+  },
+
+  renderQuickView(product) {
+    return `
+      <div class="quick-view-grid">
+        <div class="quick-view-image">
+          <img src="${product.image || '/images/placeholder.svg'}" alt="${product.name}">
+        </div>
+        <div class="quick-view-info">
+          <h2 class="quick-view-title">${product.name}</h2>
+          <div class="quick-view-price">
+            <span class="price-current">${this.formatCurrency(product.price)}</span>
+            ${product.compareAtPrice ? `
+              <span class="price-original">${this.formatCurrency(product.compareAtPrice)}</span>
+              <span class="price-discount">-${Math.round((1 - product.price / product.compareAtPrice) * 100)}%</span>
+            ` : ''}
+          </div>
+          <p class="quick-view-description">${product.shortDescription || ''}</p>
+          <div class="quick-view-actions">
+            <div class="quantity-input">
+              <button type="button" class="quantity-btn" data-action="minus">-</button>
+              <input type="number" value="1" min="1" max="${product.stock}">
+              <button type="button" class="quantity-btn" data-action="plus">+</button>
+            </div>
+            <button class="btn btn-primary" data-add-to-cart data-product-id="${product.id}">
+              Add to Cart
+            </button>
+          </div>
+          <a href="/products/${product.slug}" class="btn btn-outline btn-block">View Full Details</a>
+        </div>
+      </div>
+    `
+  },
+
+  // Notifications
+  showNotification(message, type = 'info') {
+    const container = document.getElementById('notifications') || this.createNotificationContainer()
+
+    const notification = document.createElement('div')
+    notification.className = `notification notification-${type}`
+    notification.innerHTML = `
+      <span>${message}</span>
+      <button onclick="this.parentElement.remove()">&times;</button>
+    `
+
+    container.appendChild(notification)
+
+    setTimeout(() => notification.remove(), 5000)
+  },
+
+  createNotificationContainer() {
+    const container = document.createElement('div')
+    container.id = 'notifications'
+    container.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;'
+    document.body.appendChild(container)
+    return container
+  },
+
+  // Helpers
+  formatCurrency(value, currency = 'EUR', locale = 'it-IT') {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency,
+    }).format(value)
+  }
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => TechStore.init())

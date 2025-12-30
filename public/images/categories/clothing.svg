@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect fill="#fdf2f8" width="600" height="400"/>
+  <path fill="#ec4899" d="M250 120 L300 100 L350 120 L340 140 L320 130 L320 280 L280 280 L280 130 L260 140 Z"/>
+  <ellipse fill="#f9a8d4" cx="300" cy="95" rx="25" ry="15"/>
+  <text x="300" y="340" font-family="Arial" font-size="24" fill="#be185d" text-anchor="middle">Clothing</text>
+</svg>

@@ -1,0 +1,883 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block body_class %}checkout-page{% endblock %}
+
+{% block content %}
+<section class="checkout">
+  <div class="container">
+    <h1 class="checkout-title">Checkout</h1>
+
+    <form id="checkout-form" action="/checkout" method="POST" class="checkout-layout">
+      <!-- Main Form -->
+      <div class="checkout-main">
+        <!-- Contact -->
+        <div class="checkout-section">
+          <h2 class="checkout-section-title">
+            <span class="step-number">1</span>
+            Contact Information
+          </h2>
+
+          {% if not is_authenticated %}
+            <p class="login-prompt">
+              Already have an account? <a href="/login?next=/checkout">Log in</a> for faster checkout.
+            </p>
+          {% endif %}
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-input"
+                value="{{ user.email|default('') }}"
+                required
+              >
+            </div>
+          </div>
+
+          <label class="form-checkbox">
+            <input type="checkbox" name="newsletter" checked>
+            <span>Email me with news and offers</span>
+          </label>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="checkout-section">
+          <h2 class="checkout-section-title">
+            <span class="step-number">2</span>
+            Shipping Address
+          </h2>
+
+          <div class="form-row form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="shipping_first_name">First Name</label>
+              <input
+                type="text"
+                id="shipping_first_name"
+                name="shipping_first_name"
+                class="form-input"
+                value="{{ user.firstName|default('') }}"
+                required
+              >
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="shipping_last_name">Last Name</label>
+              <input
+                type="text"
+                id="shipping_last_name"
+                name="shipping_last_name"
+                class="form-input"
+                value="{{ user.lastName|default('') }}"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipping_company">Company (optional)</label>
+            <input type="text" id="shipping_company" name="shipping_company" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipping_address1">Address</label>
+            <input
+              type="text"
+              id="shipping_address1"
+              name="shipping_address1"
+              class="form-input"
+              placeholder="Street address"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipping_address2">Apartment, suite, etc. (optional)</label>
+            <input type="text" id="shipping_address2" name="shipping_address2" class="form-input">
+          </div>
+
+          <div class="form-row form-row-3">
+            <div class="form-group">
+              <label class="form-label" for="shipping_city">City</label>
+              <input type="text" id="shipping_city" name="shipping_city" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="shipping_state">State/Province</label>
+              <input type="text" id="shipping_state" name="shipping_state" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="shipping_postal_code">Postal Code</label>
+              <input type="text" id="shipping_postal_code" name="shipping_postal_code" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipping_country">Country</label>
+            <select id="shipping_country" name="shipping_country" class="form-select" required>
+              <option value="">Select country</option>
+              <option value="IT" selected>Italy</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="ES">Spain</option>
+              <option value="GB">United Kingdom</option>
+              <option value="US">United States</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipping_phone">Phone (optional)</label>
+            <input type="tel" id="shipping_phone" name="shipping_phone" class="form-input">
+          </div>
+
+          <label class="form-checkbox">
+            <input type="checkbox" name="save_address" checked>
+            <span>Save this address for future orders</span>
+          </label>
+        </div>
+
+        <!-- Shipping Method -->
+        <div class="checkout-section">
+          <h2 class="checkout-section-title">
+            <span class="step-number">3</span>
+            Shipping Method
+          </h2>
+
+          <div class="shipping-methods">
+            {% for method in shipping_methods %}
+              <label class="shipping-option {{ 'selected' if loop.first else '' }}">
+                <input
+                  type="radio"
+                  name="shipping_method"
+                  value="{{ method.id }}"
+                  data-price="{{ method.price }}"
+                  {{ 'checked' if loop.first else '' }}
+                  required
+                >
+                <div class="shipping-option-content">
+                  <div class="shipping-option-info">
+                    <span class="shipping-option-name">{{ method.name }}</span>
+                    <span class="shipping-option-desc">{{ method.description }}</span>
+                    {% if method.estimatedDays %}
+                      <span class="shipping-option-time">Est. {{ method.estimatedDays }} business days</span>
+                    {% endif %}
+                  </div>
+                  <span class="shipping-option-price">
+                    {% if method.freeAbove and cart.subtotal >= method.freeAbove %}
+                      <span class="free-badge">Free</span>
+                      <span class="original-price">{{ method.price|currency }}</span>
+                    {% elif method.price == 0 %}
+                      Free
+                    {% else %}
+                      {{ method.price|currency }}
+                    {% endif %}
+                  </span>
+                </div>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Billing Address -->
+        <div class="checkout-section">
+          <h2 class="checkout-section-title">
+            <span class="step-number">4</span>
+            Billing Address
+          </h2>
+
+          <label class="form-checkbox billing-same">
+            <input type="checkbox" name="billing_same" id="billing_same" checked>
+            <span>Same as shipping address</span>
+          </label>
+
+          <div id="billing-fields" class="billing-fields" style="display: none;">
+            <div class="form-row form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="billing_first_name">First Name</label>
+                <input type="text" id="billing_first_name" name="billing_first_name" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="billing_last_name">Last Name</label>
+                <input type="text" id="billing_last_name" name="billing_last_name" class="form-input">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="billing_company">Company (optional)</label>
+              <input type="text" id="billing_company" name="billing_company" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="billing_address1">Address</label>
+              <input type="text" id="billing_address1" name="billing_address1" class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="billing_address2">Apartment, suite, etc. (optional)</label>
+              <input type="text" id="billing_address2" name="billing_address2" class="form-input">
+            </div>
+
+            <div class="form-row form-row-3">
+              <div class="form-group">
+                <label class="form-label" for="billing_city">City</label>
+                <input type="text" id="billing_city" name="billing_city" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="billing_state">State/Province</label>
+                <input type="text" id="billing_state" name="billing_state" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="billing_postal_code">Postal Code</label>
+                <input type="text" id="billing_postal_code" name="billing_postal_code" class="form-input">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="billing_country">Country</label>
+              <select id="billing_country" name="billing_country" class="form-select">
+                <option value="">Select country</option>
+                <option value="IT">Italy</option>
+                <option value="DE">Germany</option>
+                <option value="FR">France</option>
+                <option value="ES">Spain</option>
+                <option value="GB">United Kingdom</option>
+                <option value="US">United States</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="checkout-section">
+          <h2 class="checkout-section-title">
+            <span class="step-number">5</span>
+            Payment
+          </h2>
+
+          <div class="payment-methods-list">
+            <label class="payment-option selected">
+              <input type="radio" name="payment_method" value="card" checked required>
+              <div class="payment-option-content">
+                <span class="payment-option-name">Credit Card</span>
+                <div class="payment-icons">
+                  <img src="/images/payments/visa.svg" alt="Visa">
+                  <img src="/images/payments/mastercard.svg" alt="Mastercard">
+                  <img src="/images/payments/amex.svg" alt="Amex">
+                </div>
+              </div>
+            </label>
+
+            <div id="card-fields" class="card-fields">
+              <div class="form-group">
+                <label class="form-label" for="card_number">Card Number</label>
+                <input
+                  type="text"
+                  id="card_number"
+                  name="card_number"
+                  class="form-input"
+                  placeholder="1234 5678 9012 3456"
+                  maxlength="19"
+                >
+              </div>
+              <div class="form-row form-row-2">
+                <div class="form-group">
+                  <label class="form-label" for="card_expiry">Expiration Date</label>
+                  <input
+                    type="text"
+                    id="card_expiry"
+                    name="card_expiry"
+                    class="form-input"
+                    placeholder="MM/YY"
+                    maxlength="5"
+                  >
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="card_cvc">CVC</label>
+                  <input
+                    type="text"
+                    id="card_cvc"
+                    name="card_cvc"
+                    class="form-input"
+                    placeholder="123"
+                    maxlength="4"
+                  >
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="card_name">Name on Card</label>
+                <input type="text" id="card_name" name="card_name" class="form-input">
+              </div>
+            </div>
+
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="paypal">
+              <div class="payment-option-content">
+                <span class="payment-option-name">PayPal</span>
+                <img src="/images/payments/paypal.svg" alt="PayPal" height="20">
+              </div>
+            </label>
+
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="bank_transfer">
+              <div class="payment-option-content">
+                <span class="payment-option-name">Bank Transfer</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="checkout-section">
+          <div class="form-group">
+            <label class="form-label" for="notes">Order Notes (optional)</label>
+            <textarea
+              id="notes"
+              name="notes"
+              class="form-textarea"
+              rows="3"
+              placeholder="Special instructions for your order..."
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <aside class="checkout-sidebar">
+        <div class="order-summary">
+          <h2 class="summary-title">Order Summary</h2>
+
+          <!-- Items -->
+          <div class="summary-items">
+            {% for item in cart.items %}
+              <div class="summary-item">
+                <div class="summary-item-image">
+                  <img src="{{ item.product.images.0.url|default('/images/placeholder.svg') }}" alt="{{ item.product.name }}">
+                  <span class="item-quantity">{{ item.quantity }}</span>
+                </div>
+                <div class="summary-item-info">
+                  <span class="item-name">{{ item.product.name|truncatechars(30) }}</span>
+                  {% if item.variant %}
+                    <span class="item-options">
+                      {% for attr in item.variant.attributes %}
+                        {{ attr.value }}{{ ' / ' if not loop.last else '' }}
+                      {% endfor %}
+                    </span>
+                  {% endif %}
+                </div>
+                <span class="summary-item-price">{{ (item.price * item.quantity)|currency }}</span>
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Coupon -->
+          <div class="summary-coupon">
+            <form id="checkout-coupon-form" class="coupon-form">
+              <input type="text" name="code" placeholder="Discount code" value="{{ cart.coupon.code|default('') }}">
+              <button type="submit" class="btn btn-secondary">Apply</button>
+            </form>
+          </div>
+
+          <!-- Totals -->
+          <div class="summary-totals">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="checkout-subtotal">{{ cart.subtotal|currency }}</span>
+            </div>
+            {% if cart.discount > 0 %}
+              <div class="summary-row discount">
+                <span>Discount ({{ cart.coupon.code }})</span>
+                <span>-{{ cart.discount|currency }}</span>
+              </div>
+            {% endif %}
+            <div class="summary-row">
+              <span>Shipping</span>
+              <span id="checkout-shipping">{{ shipping_cost|currency }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax</span>
+              <span id="checkout-tax">{{ tax|currency }}</span>
+            </div>
+          </div>
+
+          <div class="summary-total">
+            <span>Total</span>
+            <span id="checkout-total">{{ cart.total|currency }}</span>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-primary btn-lg btn-block place-order-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            Place Order - {{ cart.total|currency }}
+          </button>
+
+          <p class="terms-notice">
+            By placing your order, you agree to our
+            <a href="/terms" target="_blank">Terms of Service</a> and
+            <a href="/privacy" target="_blank">Privacy Policy</a>.
+          </p>
+
+          <!-- Security -->
+          <div class="security-badges">
+            <div class="security-badge">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Secure SSL Encryption</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.checkout {
+  padding: 2rem 0;
+  background: var(--gray-50);
+  min-height: 100vh;
+}
+
+.checkout-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.checkout-section {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.checkout-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.login-prompt {
+  background: var(--gray-50);
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.form-row {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-row-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-row-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Shipping Methods */
+.shipping-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.shipping-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.shipping-option:hover, .shipping-option.selected {
+  border-color: var(--primary);
+}
+
+.shipping-option input {
+  margin-top: 0.25rem;
+}
+
+.shipping-option-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.shipping-option-name {
+  font-weight: 600;
+  display: block;
+}
+
+.shipping-option-desc {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  display: block;
+}
+
+.shipping-option-time {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.shipping-option-price {
+  font-weight: 600;
+}
+
+.free-badge {
+  color: var(--success);
+}
+
+.original-price {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  text-decoration: line-through;
+  margin-left: 0.25rem;
+}
+
+/* Billing */
+.billing-same {
+  margin-bottom: 1.5rem;
+}
+
+.billing-fields {
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+  margin-top: 1rem;
+}
+
+/* Payment Methods */
+.payment-methods-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.payment-option:hover, .payment-option.selected {
+  border-color: var(--primary);
+}
+
+.payment-option-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payment-option-name {
+  font-weight: 500;
+}
+
+.payment-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.payment-icons img {
+  height: 20px;
+}
+
+.card-fields {
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  margin-top: 1rem;
+}
+
+/* Order Summary */
+.checkout-sidebar {
+  position: sticky;
+  top: 100px;
+}
+
+.order-summary {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.summary-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.summary-items {
+  margin-bottom: 1.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.summary-item {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.summary-item-image {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  background: var(--gray-100);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.summary-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.item-quantity {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-600);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.summary-item-info {
+  flex: 1;
+}
+
+.item-name {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.item-options {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+.summary-item-price {
+  font-weight: 600;
+}
+
+.summary-coupon {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.summary-totals {
+  padding: 1rem 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.summary-row.discount {
+  color: var(--success);
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+  border-top: 2px solid var(--gray-200);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.place-order-btn {
+  margin-bottom: 1rem;
+}
+
+.terms-notice {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.terms-notice a {
+  color: var(--gray-600);
+  text-decoration: underline;
+}
+
+.security-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.security-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  color: var(--gray-600);
+}
+
+.security-badge .icon {
+  color: var(--success);
+}
+
+@media (max-width: 1024px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-sidebar {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-row-2, .form-row-3 {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<script>
+// Billing same as shipping toggle
+document.getElementById('billing_same')?.addEventListener('change', function() {
+  document.getElementById('billing-fields').style.display = this.checked ? 'none' : 'block'
+})
+
+// Shipping method selection
+document.querySelectorAll('.shipping-option').forEach(option => {
+  option.addEventListener('click', () => {
+    document.querySelectorAll('.shipping-option').forEach(o => o.classList.remove('selected'))
+    option.classList.add('selected')
+    option.querySelector('input').checked = true
+    updateTotals()
+  })
+})
+
+// Payment method selection
+document.querySelectorAll('.payment-option').forEach(option => {
+  option.addEventListener('click', () => {
+    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'))
+    option.classList.add('selected')
+    option.querySelector('input').checked = true
+
+    const cardFields = document.getElementById('card-fields')
+    const method = option.querySelector('input').value
+    cardFields.style.display = method === 'card' ? 'block' : 'none'
+  })
+})
+
+// Card number formatting
+document.getElementById('card_number')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, '')
+  value = value.replace(/(\d{4})(?=\d)/g, '$1 ')
+  e.target.value = value.slice(0, 19)
+})
+
+// Expiry date formatting
+document.getElementById('card_expiry')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, '')
+  if (value.length >= 2) {
+    value = value.slice(0, 2) + '/' + value.slice(2)
+  }
+  e.target.value = value.slice(0, 5)
+})
+
+// Update totals when shipping changes
+function updateTotals() {
+  const selectedShipping = document.querySelector('.shipping-option input:checked')
+  if (selectedShipping) {
+    const shippingPrice = parseFloat(selectedShipping.dataset.price)
+    document.getElementById('checkout-shipping').textContent = TechStore.formatCurrency(shippingPrice)
+
+    // Recalculate total (simplified - in real app, use server-side calculation)
+    const subtotal = parseFloat('{{ cart.subtotal }}')
+    const discount = parseFloat('{{ cart.discount|default:0 }}')
+    const tax = parseFloat('{{ tax|default:0 }}')
+    const total = subtotal - discount + shippingPrice + tax
+    document.getElementById('checkout-total').textContent = TechStore.formatCurrency(total)
+    document.querySelector('.place-order-btn').innerHTML = `
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+        <line x1="1" y1="10" x2="23" y2="10"></line>
+      </svg>
+      Place Order - ${TechStore.formatCurrency(total)}
+    `
+  }
+}
+</script>
+{% endblock %}

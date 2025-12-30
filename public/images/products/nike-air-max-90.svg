@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect fill="#fef2f2" width="400" height="400"/>
+  <path fill="#dc2626" d="M80 220 Q100 180 200 170 Q320 160 340 220 L340 260 Q320 280 200 280 Q100 280 80 260 Z"/>
+  <path fill="#f87171" d="M100 200 Q150 160 200 160 Q280 160 320 200 L300 220 Q260 190 200 190 Q140 190 120 220 Z"/>
+  <ellipse fill="#fee2e2" cx="200" cy="190" rx="60" ry="30"/>
+  <path fill="#991b1b" d="M100 240 L320 240 L310 270 L110 270 Z"/>
+  <text x="200" y="340" font-family="Arial" font-size="18" font-weight="bold" fill="#dc2626" text-anchor="middle">AIR MAX</text>
+</svg>

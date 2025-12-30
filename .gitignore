@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Database
+data/
+*.db
+*.db-journal
+
+# Build
+dist/
+.bun/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Compiled templates
+compiled/
+
+# Drizzle
+drizzle/
