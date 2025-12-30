@@ -189,10 +189,10 @@ const TechStore = {
       container.innerHTML = '<div class="search-no-results">No products found</div>'
     } else {
       container.innerHTML = products.map(p => `
-        <a href="/products/${p.slug}" class="search-result-item">
-          <img src="${p.image || '/images/placeholder.svg'}" alt="${p.name}">
+        <a href="/products/${this.escapeAttr(p.slug)}" class="search-result-item">
+          <img src="${this.escapeAttr(p.image || '/images/placeholder.svg')}" alt="${this.escapeAttr(p.name)}">
           <div class="search-result-content">
-            <div class="search-result-title">${p.name}</div>
+            <div class="search-result-title">${this.escapeHtml(p.name)}</div>
             <div class="search-result-price">${this.formatCurrency(p.price)}</div>
           </div>
         </a>
@@ -361,13 +361,15 @@ const TechStore = {
   },
 
   renderQuickView(product) {
+    const stock = parseInt(product.stock) || 0
+    const id = parseInt(product.id) || 0
     return `
       <div class="quick-view-grid">
         <div class="quick-view-image">
-          <img src="${product.image || '/images/placeholder.svg'}" alt="${product.name}">
+          <img src="${this.escapeAttr(product.image || '/images/placeholder.svg')}" alt="${this.escapeAttr(product.name)}">
         </div>
         <div class="quick-view-info">
-          <h2 class="quick-view-title">${product.name}</h2>
+          <h2 class="quick-view-title">${this.escapeHtml(product.name)}</h2>
           <div class="quick-view-price">
             <span class="price-current">${this.formatCurrency(product.price)}</span>
             ${product.compareAtPrice ? `
@@ -375,18 +377,18 @@ const TechStore = {
               <span class="price-discount">-${Math.round((1 - product.price / product.compareAtPrice) * 100)}%</span>
             ` : ''}
           </div>
-          <p class="quick-view-description">${product.shortDescription || ''}</p>
+          <p class="quick-view-description">${this.escapeHtml(product.shortDescription || '')}</p>
           <div class="quick-view-actions">
             <div class="quantity-input">
               <button type="button" class="quantity-btn" data-action="minus">-</button>
-              <input type="number" value="1" min="1" max="${product.stock}">
+              <input type="number" value="1" min="1" max="${stock}">
               <button type="button" class="quantity-btn" data-action="plus">+</button>
             </div>
-            <button class="btn btn-primary" data-add-to-cart data-product-id="${product.id}">
+            <button class="btn btn-primary" data-add-to-cart data-product-id="${id}">
               Add to Cart
             </button>
           </div>
-          <a href="/products/${product.slug}" class="btn btn-outline btn-block">View Full Details</a>
+          <a href="/products/${this.escapeAttr(product.slug)}" class="btn btn-outline btn-block">View Full Details</a>
         </div>
       </div>
     `
@@ -395,14 +397,21 @@ const TechStore = {
   // Notifications
   showNotification(message, type = 'info') {
     const container = document.getElementById('notifications') || this.createNotificationContainer()
+    const validTypes = ['info', 'success', 'error', 'warning']
+    const safeType = validTypes.includes(type) ? type : 'info'
 
     const notification = document.createElement('div')
-    notification.className = `notification notification-${type}`
-    notification.innerHTML = `
-      <span>${message}</span>
-      <button onclick="this.parentElement.remove()">&times;</button>
-    `
+    notification.className = `notification notification-${safeType}`
 
+    const span = document.createElement('span')
+    span.textContent = message
+
+    const closeBtn = document.createElement('button')
+    closeBtn.innerHTML = '&times;'
+    closeBtn.onclick = () => notification.remove()
+
+    notification.appendChild(span)
+    notification.appendChild(closeBtn)
     container.appendChild(notification)
 
     setTimeout(() => notification.remove(), 5000)
@@ -422,6 +431,26 @@ const TechStore = {
       style: 'currency',
       currency,
     }).format(value)
+  },
+
+  // HTML escape to prevent XSS
+  escapeHtml(str) {
+    if (!str) return ''
+    const div = document.createElement('div')
+    div.textContent = str
+    return div.innerHTML
+  },
+
+  // Safe attribute value
+  escapeAttr(str) {
+    if (!str) return ''
+    return str.replace(/[&<>"']/g, c => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[c])
   }
 }
 

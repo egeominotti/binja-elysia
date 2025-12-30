@@ -9,6 +9,17 @@ import { brandService } from './services/brand.service'
 import { cartService } from './services/cart.service'
 import { nanoid } from 'nanoid'
 
+// Configuration - centralized values
+const CONFIG = {
+  TAX_RATE: 0.22, // 22% VAT (Italy)
+  FREE_SHIPPING_THRESHOLD: 100, // Free shipping above this amount
+  SHIPPING_METHODS: [
+    { id: 1, name: 'Standard Shipping', description: '5-7 business days', price: 5.99, freeAbove: 100, estimatedDays: '5-7' },
+    { id: 2, name: 'Express Shipping', description: '2-3 business days', price: 12.99, estimatedDays: '2-3' },
+    { id: 3, name: 'Next Day', description: 'Next business day', price: 24.99, estimatedDays: '1' }
+  ]
+}
+
 // Session middleware
 const sessionMiddleware = new Elysia({ name: 'session' })
   .derive({ as: 'global' }, async ({ cookie: { session_id } }) => {
@@ -29,7 +40,7 @@ const sessionMiddleware = new Elysia({ name: 'session' })
 const cartMiddleware = new Elysia({ name: 'cart' })
   .use(sessionMiddleware)
   .derive({ as: 'global' }, async ({ sessionId }) => {
-    const cart = await cartService.getOrCreateCart(undefined, sessionId)
+    const cart = await cartService.getOrCreateCart(undefined, sessionId as string)
     return { cart }
   })
 
@@ -261,22 +272,19 @@ const app = new Elysia()
       return Response.redirect('/cart')
     }
 
-    // Get shipping methods from DB (simplified)
-    const shipping_methods = [
-      { id: 1, name: 'Standard Shipping', description: '5-7 business days', price: 5.99, freeAbove: 100, estimatedDays: '5-7' },
-      { id: 2, name: 'Express Shipping', description: '2-3 business days', price: 12.99, estimatedDays: '2-3' },
-      { id: 3, name: 'Next Day', description: 'Next business day', price: 24.99, estimatedDays: '1' }
-    ]
+    // Use centralized config for shipping methods
+    const shipping_methods = CONFIG.SHIPPING_METHODS
 
-    // Calculate initial shipping
-    const shippingCost = cart.subtotal >= 100 ? 0 : shipping_methods[0].price
-    const tax = (cart.subtotal - cart.discount) * 0.22 // 22% VAT
+    // Calculate initial shipping (free above threshold)
+    const shippingCost = cart.subtotal >= CONFIG.FREE_SHIPPING_THRESHOLD ? 0 : shipping_methods[0].price
+    const tax = (cart.subtotal - cart.discount) * CONFIG.TAX_RATE
 
     return render('pages/checkout.html', {
       cart,
       shipping_methods,
       shipping_cost: shippingCost,
       tax,
+      tax_rate: CONFIG.TAX_RATE,
       categories,
       brands,
       cart_count: cart.items.length,
@@ -330,6 +338,12 @@ const app = new Elysia()
       is_authenticated: true,
       request_path: '/account'
     })
+  })
+
+  // Logout
+  .get('/logout', async ({ cookie: { session_id } }) => {
+    session_id.remove()
+    return Response.redirect('/login')
   })
 
   // Wishlist Page
@@ -503,8 +517,8 @@ const app = new Elysia()
 
   // Wishlist API (simplified - would need user auth in real app)
   .post('/api/wishlist/toggle', async ({ body }) => {
-    const { productId } = body as any
-    // Simplified - just return success
+    const { productId: _ } = body as any
+    // Simplified - just return success (productId would be used in real implementation)
     return {
       success: true,
       inWishlist: true
@@ -515,9 +529,15 @@ const app = new Elysia()
   .onError(({ code, error, set }) => {
     console.error(`Error [${code}]:`, error)
 
-    if (code === 'NOT_FOUND') {
+    // Handle different Elysia error codes
+    if (code === 'UNKNOWN') {
       set.status = 404
       return 'Page not found'
+    }
+
+    if (code === 'VALIDATION') {
+      set.status = 400
+      return 'Invalid request'
     }
 
     set.status = 500

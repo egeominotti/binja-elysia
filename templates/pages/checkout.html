@@ -866,8 +866,8 @@ function updateTotals() {
 
     // Recalculate total (simplified - in real app, use server-side calculation)
     const subtotal = parseFloat('{{ cart.subtotal }}')
-    const discount = parseFloat('{{ cart.discount|default:0 }}')
-    const tax = parseFloat('{{ tax|default:0 }}')
+    const discount = parseFloat('{{ cart.discount|default(0) }}')
+    const tax = parseFloat('{{ tax|default(0) }}')
     const total = subtotal - discount + shippingPrice + tax
     document.getElementById('checkout-total').textContent = TechStore.formatCurrency(total)
     document.querySelector('.place-order-btn').innerHTML = `
