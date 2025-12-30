@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Frequently Asked Questions</h1>
+    <p>Find answers to common questions</p>
+  </div>
+</section>
+
+<section class="faq-section">
+  <div class="container">
+    <div class="faq-categories">
+      <div class="faq-nav">
+        <button class="faq-nav-btn active" data-category="orders">Orders & Shipping</button>
+        <button class="faq-nav-btn" data-category="returns">Returns & Refunds</button>
+        <button class="faq-nav-btn" data-category="products">Products</button>
+        <button class="faq-nav-btn" data-category="account">Account</button>
+        <button class="faq-nav-btn" data-category="payment">Payment</button>
+      </div>
+
+      <div class="faq-content">
+        <div class="faq-category active" id="orders">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How can I track my order?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Once your order ships, you'll receive an email with a tracking number. You can also track your order by visiting the <a href="/track-order">Track Order</a> page and entering your order number and email address.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What are your shipping options?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>We offer three shipping options:</p>
+              <ul>
+                <li><strong>Standard Shipping:</strong> 5-7 business days</li>
+                <li><strong>Express Shipping:</strong> 2-3 business days</li>
+                <li><strong>Next Day Delivery:</strong> Next business day</li>
+              </ul>
+              <p>Free standard shipping is available for orders over 100.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Do you ship internationally?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes! We ship to most countries worldwide. International shipping rates and delivery times vary by destination. You can see the exact cost during checkout.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can I change my shipping address after ordering?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>If your order hasn't shipped yet, please contact us immediately at support@techstore.demo and we'll do our best to update the address. Once shipped, address changes are not possible.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-category" id="returns">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What is your return policy?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>We offer a 30-day return policy for most items. Products must be unused, in original packaging, and with all tags attached. Visit our <a href="/returns">Returns & Exchanges</a> page for detailed information.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How do I start a return?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>To start a return:</p>
+              <ol>
+                <li>Log into your account</li>
+                <li>Go to Order History</li>
+                <li>Select the order and click "Return Items"</li>
+                <li>Follow the instructions to print your return label</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How long does a refund take?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Once we receive your return, refunds are processed within 3-5 business days. It may take an additional 5-10 business days for the refund to appear on your statement, depending on your bank.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-category" id="products">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Are your products authentic?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes! All products sold on TechStore are 100% authentic and sourced directly from authorized distributors. We guarantee the authenticity of every item.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Do products come with warranty?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes, all products come with the manufacturer's warranty. Warranty periods vary by product and brand. Check the product page for specific warranty information.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How do I know what size to order?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Each product page includes a detailed size guide. For clothing and shoes, we recommend measuring yourself and comparing to our size charts. If you're unsure, our support team is happy to help!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-category" id="account">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How do I create an account?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Click the "Register" link in the top menu. Fill in your details and you're ready to shop! You can also create an account during checkout.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>I forgot my password. What do I do?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Click "Forgot Password" on the login page. Enter your email address and we'll send you a link to reset your password.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can I shop without an account?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Yes! You can checkout as a guest. However, creating an account lets you track orders, save addresses, access order history, and enjoy exclusive member benefits.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-category" id="payment">
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>What payment methods do you accept?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>We accept:</p>
+              <ul>
+                <li>Credit/Debit Cards (Visa, Mastercard, American Express)</li>
+                <li>PayPal</li>
+                <li>Apple Pay</li>
+                <li>Google Pay</li>
+                <li>Bank Transfer</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Is my payment information secure?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Absolutely! We use industry-standard SSL encryption and never store your full card details. All payments are processed through PCI-compliant payment providers.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can I use multiple discount codes?</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">
+              <p>Only one discount code can be applied per order. However, discount codes can usually be combined with sale prices unless otherwise stated.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-contact">
+      <h2>Still Have Questions?</h2>
+      <p>Can't find what you're looking for? Our support team is here to help.</p>
+      <a href="/contact" class="btn btn-primary">Contact Us</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.page-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  opacity: 0.9;
+  font-size: 1.125rem;
+}
+
+.faq-section {
+  padding: 4rem 0;
+  background: var(--gray-50);
+}
+
+.faq-categories {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.faq-nav-btn {
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.faq-nav-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.faq-nav-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.faq-category {
+  display: none;
+}
+
+.faq-category.active {
+  display: block;
+}
+
+.faq-item {
+  background: white;
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.faq-question:hover {
+  background: var(--gray-50);
+}
+
+.faq-question svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+
+.faq-item.open .faq-question svg {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  display: none;
+  padding: 0 1.25rem 1.25rem;
+  color: var(--gray-600);
+  line-height: 1.7;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
+.faq-answer ul, .faq-answer ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.faq-answer li {
+  margin-bottom: 0.5rem;
+}
+
+.faq-answer a {
+  color: var(--primary);
+}
+
+.faq-contact {
+  text-align: center;
+  margin-top: 4rem;
+  padding: 3rem;
+  background: white;
+  border-radius: var(--radius-xl);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.faq-contact h2 {
+  margin-bottom: 0.5rem;
+}
+
+.faq-contact p {
+  color: var(--gray-500);
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .faq-nav {
+    flex-direction: column;
+  }
+
+  .faq-nav-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // FAQ category navigation
+  document.querySelectorAll('.faq-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = btn.dataset.category
+
+      document.querySelectorAll('.faq-nav-btn').forEach(b => b.classList.remove('active'))
+      document.querySelectorAll('.faq-category').forEach(c => c.classList.remove('active'))
+
+      btn.classList.add('active')
+      document.getElementById(category).classList.add('active')
+    })
+  })
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item')
+      item.classList.toggle('open')
+    })
+  })
+})
+</script>
+{% endblock %}

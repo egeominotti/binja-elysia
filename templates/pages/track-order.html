@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+
+{% block title %}Track Order{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Track Your Order</h1>
+    <p>Enter your order details to see the latest status</p>
+  </div>
+</section>
+
+<section class="track-section">
+  <div class="container">
+    <div class="track-card">
+      <form class="track-form" id="track-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="order-number">Order Number</label>
+            <input
+              type="text"
+              id="order-number"
+              name="order_number"
+              class="form-input"
+              placeholder="e.g., ORD-12345678"
+              required
+            >
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-input"
+              placeholder="The email used for the order"
+              required
+            >
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Track Order
+        </button>
+      </form>
+
+      <div class="track-result" id="track-result" style="display: none;">
+        <div class="order-header">
+          <div>
+            <h2>Order #<span id="result-order-number">ORD-12345678</span></h2>
+            <p class="order-date">Placed on <span id="result-date">December 28, 2024</span></p>
+          </div>
+          <span class="order-status status-shipped" id="result-status">In Transit</span>
+        </div>
+
+        <div class="tracking-timeline">
+          <div class="timeline-item completed">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <h4>Order Placed</h4>
+              <p>Your order has been confirmed</p>
+              <span class="timeline-date">Dec 28, 2024 - 10:30 AM</span>
+            </div>
+          </div>
+
+          <div class="timeline-item completed">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <h4>Processing</h4>
+              <p>Your order is being prepared</p>
+              <span class="timeline-date">Dec 28, 2024 - 2:15 PM</span>
+            </div>
+          </div>
+
+          <div class="timeline-item completed">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <h4>Shipped</h4>
+              <p>Package handed to carrier</p>
+              <span class="timeline-date">Dec 29, 2024 - 9:00 AM</span>
+            </div>
+          </div>
+
+          <div class="timeline-item active">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13"/>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <h4>In Transit</h4>
+              <p>Package is on its way to you</p>
+              <span class="timeline-date">Dec 30, 2024 - 8:45 AM</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <h4>Out for Delivery</h4>
+              <p>Package will be delivered today</p>
+              <span class="timeline-date">Estimated</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="timeline-content">
+              <h4>Delivered</h4>
+              <p>Package delivered</p>
+              <span class="timeline-date">Expected: Dec 31, 2024</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="delivery-details">
+          <div class="detail-card">
+            <h4>Shipping Address</h4>
+            <p>
+              John Doe<br>
+              Via Example 123<br>
+              Milan, 20100<br>
+              Italy
+            </p>
+          </div>
+          <div class="detail-card">
+            <h4>Carrier Information</h4>
+            <p>
+              <strong>Carrier:</strong> Express Delivery<br>
+              <strong>Tracking #:</strong> 1Z999AA10123456784<br>
+              <strong>Service:</strong> Express Shipping
+            </p>
+          </div>
+        </div>
+
+        <div class="track-actions">
+          <button type="button" class="btn btn-outline" onclick="document.getElementById('track-result').style.display='none'">
+            Track Another Order
+          </button>
+          <a href="/contact" class="btn btn-primary">Contact Support</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="track-help">
+      <h3>Where Can I Find My Order Number?</h3>
+      <p>Your order number can be found in:</p>
+      <ul>
+        <li>Your order confirmation email</li>
+        <li>Your shipping notification email</li>
+        <li>Your account order history (if logged in)</li>
+      </ul>
+      <p>Order numbers typically start with "ORD-" followed by numbers.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.page-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  opacity: 0.9;
+  font-size: 1.125rem;
+}
+
+.track-section {
+  padding: 4rem 0;
+  background: var(--gray-50);
+}
+
+.track-card {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.track-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+  margin-bottom: 2rem;
+}
+
+.order-header h2 {
+  margin-bottom: 0.25rem;
+}
+
+.order-date {
+  color: var(--gray-500);
+}
+
+.order-status {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.status-shipped {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-delivered {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-processing {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.tracking-timeline {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 2rem;
+}
+
+.tracking-timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--gray-200);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 2rem;
+  padding-left: 2rem;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-icon {
+  position: absolute;
+  left: -2rem;
+  width: 32px;
+  height: 32px;
+  background: var(--gray-100);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  z-index: 1;
+}
+
+.timeline-icon svg {
+  width: 16px;
+  height: 16px;
+  color: var(--gray-400);
+}
+
+.timeline-item.completed .timeline-icon {
+  background: var(--success);
+}
+
+.timeline-item.completed .timeline-icon svg {
+  color: white;
+}
+
+.timeline-item.active .timeline-icon {
+  background: var(--primary);
+  animation: pulse 2s infinite;
+}
+
+.timeline-item.active .timeline-icon svg {
+  color: white;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+  }
+}
+
+.timeline-content h4 {
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.timeline-content p {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+}
+
+.timeline-item.completed .timeline-content h4,
+.timeline-item.active .timeline-content h4 {
+  color: var(--gray-900);
+}
+
+.timeline-item:not(.completed):not(.active) .timeline-content h4 {
+  color: var(--gray-400);
+}
+
+.delivery-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.detail-card {
+  padding: 1.25rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+}
+
+.detail-card h4 {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-card p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.track-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.track-help {
+  max-width: 600px;
+  margin: 3rem auto 0;
+  text-align: center;
+}
+
+.track-help h3 {
+  margin-bottom: 0.5rem;
+}
+
+.track-help p {
+  color: var(--gray-500);
+}
+
+.track-help ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.track-help li {
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 768px) {
+  .track-form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .order-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .delivery-details {
+    grid-template-columns: 1fr;
+  }
+
+  .track-actions {
+    flex-direction: column;
+  }
+}
+</style>
+
+<script>
+document.getElementById('track-form').addEventListener('submit', (e) => {
+  e.preventDefault()
+  // Demo: show tracking result
+  document.getElementById('track-result').style.display = 'block'
+  e.target.style.display = 'none'
+})
+</script>
+{% endblock %}

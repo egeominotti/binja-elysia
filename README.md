@@ -300,9 +300,18 @@ The demo includes a complete e-commerce schema:
 | `/checkout` | Checkout process |
 | `/login` | Login page |
 | `/register` | Registration page |
+| `/logout` | Logout and redirect |
 | `/account` | User dashboard |
 | `/account/wishlist` | Wishlist page |
 | `/search?q=` | Search results |
+| `/contact` | Contact us page |
+| `/faq` | Frequently asked questions |
+| `/shipping` | Shipping information |
+| `/returns` | Returns & exchanges policy |
+| `/track-order` | Order tracking |
+| `/about` | About us |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
 
 ## Demo Data
 

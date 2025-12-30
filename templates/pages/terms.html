@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Terms of Service</h1>
+    <p>Last updated: December 2024</p>
+  </div>
+</section>
+
+<section class="legal-section">
+  <div class="container">
+    <div class="legal-content">
+      <div class="legal-toc">
+        <h3>Table of Contents</h3>
+        <ol>
+          <li><a href="#acceptance">Acceptance of Terms</a></li>
+          <li><a href="#account">User Accounts</a></li>
+          <li><a href="#orders">Orders & Payments</a></li>
+          <li><a href="#shipping">Shipping & Delivery</a></li>
+          <li><a href="#returns">Returns & Refunds</a></li>
+          <li><a href="#intellectual">Intellectual Property</a></li>
+          <li><a href="#limitation">Limitation of Liability</a></li>
+          <li><a href="#changes">Changes to Terms</a></li>
+        </ol>
+      </div>
+
+      <div class="legal-text">
+        <section id="acceptance">
+          <h2>1. Acceptance of Terms</h2>
+          <p>By accessing and using TechStore, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.</p>
+        </section>
+
+        <section id="account">
+          <h2>2. User Accounts</h2>
+          <p>When you create an account with us, you must provide accurate and complete information. You are responsible for:</p>
+          <ul>
+            <li>Maintaining the confidentiality of your account</li>
+            <li>All activities that occur under your account</li>
+            <li>Notifying us of any unauthorized use</li>
+          </ul>
+          <p>We reserve the right to terminate accounts that violate these terms.</p>
+        </section>
+
+        <section id="orders">
+          <h2>3. Orders & Payments</h2>
+          <p>All orders are subject to acceptance and availability. We reserve the right to refuse any order.</p>
+          <h3>Pricing</h3>
+          <ul>
+            <li>All prices are in EUR and include applicable taxes</li>
+            <li>Prices may change without notice</li>
+            <li>We strive for accuracy but errors may occur</li>
+          </ul>
+          <h3>Payment</h3>
+          <ul>
+            <li>Payment is required at the time of purchase</li>
+            <li>We accept major credit cards and PayPal</li>
+            <li>All payments are processed securely</li>
+          </ul>
+        </section>
+
+        <section id="shipping">
+          <h2>4. Shipping & Delivery</h2>
+          <p>We ship to most locations worldwide. Delivery times and costs vary by destination. See our <a href="/shipping">Shipping Information</a> page for details.</p>
+          <ul>
+            <li>Risk of loss transfers upon delivery</li>
+            <li>Delivery estimates are not guaranteed</li>
+            <li>Customs duties may apply for international orders</li>
+          </ul>
+        </section>
+
+        <section id="returns">
+          <h2>5. Returns & Refunds</h2>
+          <p>We offer a 30-day return policy for most items. See our <a href="/returns">Returns & Exchanges</a> page for complete details.</p>
+          <ul>
+            <li>Items must be in original condition</li>
+            <li>Some items are non-returnable (final sale, personalized)</li>
+            <li>Refunds processed within 5-10 business days</li>
+          </ul>
+        </section>
+
+        <section id="intellectual">
+          <h2>6. Intellectual Property</h2>
+          <p>All content on this website, including text, graphics, logos, images, and software, is the property of TechStore or its content suppliers and protected by intellectual property laws.</p>
+          <p>You may not reproduce, distribute, or create derivative works without express written permission.</p>
+        </section>
+
+        <section id="limitation">
+          <h2>7. Limitation of Liability</h2>
+          <p>To the fullest extent permitted by law, TechStore shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the service.</p>
+          <p>Our total liability shall not exceed the amount paid by you for the relevant product or service.</p>
+        </section>
+
+        <section id="changes">
+          <h2>8. Changes to Terms</h2>
+          <p>We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting. Your continued use of the service constitutes acceptance of the modified terms.</p>
+          <p>For questions about these terms, contact us at legal@techstore.demo.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.page-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.page-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+.page-header p { opacity: 0.9; }
+
+.legal-section { padding: 4rem 0; background: var(--gray-50); }
+
+.legal-content {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 3rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.legal-toc {
+  position: sticky;
+  top: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  height: fit-content;
+}
+
+.legal-toc h3 { margin-bottom: 1rem; font-size: 1rem; }
+.legal-toc ol { padding-left: 1.25rem; margin: 0; }
+.legal-toc li { margin-bottom: 0.5rem; }
+.legal-toc a { color: var(--gray-600); font-size: 0.875rem; }
+.legal-toc a:hover { color: var(--primary); }
+
+.legal-text {
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.legal-text section { margin-bottom: 2.5rem; }
+.legal-text section:last-child { margin-bottom: 0; }
+.legal-text h2 { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--gray-200); }
+.legal-text h3 { font-size: 1rem; margin: 1.5rem 0 0.75rem; }
+.legal-text p { color: var(--gray-600); line-height: 1.8; margin-bottom: 1rem; }
+.legal-text ul { margin: 1rem 0; padding-left: 1.5rem; }
+.legal-text li { margin-bottom: 0.5rem; color: var(--gray-600); }
+.legal-text a { color: var(--primary); }
+
+@media (max-width: 768px) {
+  .legal-content { grid-template-columns: 1fr; }
+  .legal-toc { position: static; }
+}
+</style>
+{% endblock %}

@@ -366,6 +366,94 @@ const app = new Elysia()
     })
   })
 
+  // Contact Page
+  .get('/contact', async ({ categories, brands, cart }) => {
+    return render('pages/contact.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/contact'
+    })
+  })
+
+  // FAQ Page
+  .get('/faq', async ({ categories, brands, cart }) => {
+    return render('pages/faq.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/faq'
+    })
+  })
+
+  // Shipping Info Page
+  .get('/shipping', async ({ categories, brands, cart }) => {
+    return render('pages/shipping.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/shipping'
+    })
+  })
+
+  // Returns & Exchanges Page
+  .get('/returns', async ({ categories, brands, cart }) => {
+    return render('pages/returns.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/returns'
+    })
+  })
+
+  // Track Order Page
+  .get('/track-order', async ({ categories, brands, cart }) => {
+    return render('pages/track-order.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/track-order'
+    })
+  })
+
+  // About Page
+  .get('/about', async ({ categories, brands, cart }) => {
+    return render('pages/about.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/about'
+    })
+  })
+
+  // Privacy Policy Page
+  .get('/privacy', async ({ categories, brands, cart }) => {
+    return render('pages/privacy.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/privacy'
+    })
+  })
+
+  // Terms of Service Page
+  .get('/terms', async ({ categories, brands, cart }) => {
+    return render('pages/terms.html', {
+      categories,
+      brands,
+      cart,
+      cart_count: cart.items.length,
+      request_path: '/terms'
+    })
+  })
+
   // Search
   .get('/search', async ({ query, categories, brands, cart }) => {
     const searchQuery = query.q as string

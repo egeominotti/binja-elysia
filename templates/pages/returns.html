@@ -1,0 +1,477 @@
+{% extends "base.html" %}
+
+{% block title %}Returns & Exchanges{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>Returns & Exchanges</h1>
+    <p>We make returns easy</p>
+  </div>
+</section>
+
+<section class="returns-section">
+  <div class="container">
+    <div class="returns-hero">
+      <div class="returns-stats">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <strong>30 Days</strong>
+            <span>Return Window</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <strong>Free</strong>
+            <span>Return Shipping</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <strong>3-5 Days</strong>
+            <span>Refund Processing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="returns-content">
+      <div class="returns-main">
+        <div class="returns-steps">
+          <h2>How to Return an Item</h2>
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Start Your Return</h3>
+              <p>Log into your account, go to Order History, and select the item(s) you'd like to return. Fill out the return reason.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Print Return Label</h3>
+              <p>We'll email you a prepaid return label. Print it and attach it to your package securely.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Ship Your Package</h3>
+              <p>Drop off your package at any authorized shipping location. Keep the receipt for tracking.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Receive Your Refund</h3>
+              <p>Once we receive and inspect your return, we'll process your refund within 3-5 business days.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="policy-section">
+          <h2>Return Policy</h2>
+          <div class="policy-grid">
+            <div class="policy-card eligible">
+              <h3>Eligible for Return</h3>
+              <ul>
+                <li>Items in original condition</li>
+                <li>Unworn and unwashed items</li>
+                <li>Items with original tags attached</li>
+                <li>Items in original packaging</li>
+                <li>Electronics in sealed packaging</li>
+              </ul>
+            </div>
+            <div class="policy-card not-eligible">
+              <h3>Not Eligible</h3>
+              <ul>
+                <li>Items marked as "Final Sale"</li>
+                <li>Personalized or custom items</li>
+                <li>Intimate apparel and swimwear</li>
+                <li>Items damaged by customer</li>
+                <li>Items without tags or packaging</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="exchange-section">
+          <h2>Exchanges</h2>
+          <p>Need a different size or color? Exchanges are easy!</p>
+          <div class="exchange-options">
+            <div class="exchange-option">
+              <h4>Same Item, Different Size/Color</h4>
+              <p>Select "Exchange" when starting your return. If the new item is in stock, we'll ship it as soon as we receive your return.</p>
+            </div>
+            <div class="exchange-option">
+              <h4>Different Item</h4>
+              <p>For a different item, we recommend returning for a refund and placing a new order to ensure availability.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="returns-sidebar">
+        <div class="sidebar-card">
+          <h3>Refund Methods</h3>
+          <div class="refund-method">
+            <strong>Original Payment Method</strong>
+            <p>Refunded in 5-10 business days after processing</p>
+          </div>
+          <div class="refund-method">
+            <strong>Store Credit</strong>
+            <p>Instant store credit available upon return approval</p>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <h3>Return Shipping</h3>
+          <p>Returns are <strong>free</strong> for the following reasons:</p>
+          <ul>
+            <li>Wrong item received</li>
+            <li>Defective product</li>
+            <li>Item doesn't match description</li>
+          </ul>
+          <p class="small">For other returns, a 5.99 fee will be deducted from your refund.</p>
+        </div>
+
+        <div class="sidebar-card highlight">
+          <h3>Need Help?</h3>
+          <p>Our support team is ready to assist with your return.</p>
+          <a href="/contact" class="btn btn-primary btn-block">Contact Support</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.page-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  opacity: 0.9;
+  font-size: 1.125rem;
+}
+
+.returns-section {
+  padding: 4rem 0;
+  background: var(--gray-50);
+}
+
+.returns-hero {
+  margin-bottom: 3rem;
+}
+
+.returns-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.stat-item {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon svg {
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.stat-content strong {
+  display: block;
+  font-size: 1.5rem;
+}
+
+.stat-content span {
+  color: var(--gray-500);
+}
+
+.returns-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.returns-main h2 {
+  margin-bottom: 1.5rem;
+}
+
+.returns-steps {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.step {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.step:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.step:first-of-type {
+  padding-top: 0;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+}
+
+.step-content p {
+  color: var(--gray-500);
+  margin: 0;
+}
+
+.policy-section {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.policy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.policy-card {
+  padding: 1.5rem;
+  border-radius: var(--radius);
+}
+
+.policy-card.eligible {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+}
+
+.policy-card.not-eligible {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.policy-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.policy-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.policy-card li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.policy-card.eligible li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--success);
+}
+
+.policy-card.not-eligible li::before {
+  content: '✕';
+  position: absolute;
+  left: 0;
+  color: var(--danger);
+}
+
+.exchange-section {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.exchange-section > p {
+  color: var(--gray-500);
+  margin-bottom: 1.5rem;
+}
+
+.exchange-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.exchange-option {
+  padding: 1.25rem;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+}
+
+.exchange-option h4 {
+  margin-bottom: 0.5rem;
+}
+
+.exchange-option p {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.sidebar-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.refund-method {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.refund-method:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.refund-method strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.refund-method p {
+  color: var(--gray-500);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.sidebar-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.sidebar-card li {
+  padding: 0.25rem 0;
+  padding-left: 1.25rem;
+  position: relative;
+  font-size: 0.875rem;
+}
+
+.sidebar-card li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+}
+
+.sidebar-card .small {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+}
+
+.sidebar-card.highlight {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+}
+
+.sidebar-card.highlight h3 {
+  color: white;
+}
+
+.sidebar-card.highlight p {
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .returns-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .returns-content {
+    grid-template-columns: 1fr;
+  }
+
+  .policy-grid,
+  .exchange-options {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+{% endblock %}
