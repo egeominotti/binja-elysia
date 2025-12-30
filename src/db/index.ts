@@ -7,6 +7,6 @@ import { mkdir } from 'fs/promises'
 await mkdir('./data', { recursive: true })
 
 const sqlite = new Database('./data/ecommerce.db')
-export const db = drizzle(sqlite, { schema })
+export const db = drizzle(sqlite, { schema, logger: true })
 
 export * from './schema'
